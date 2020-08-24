@@ -109,6 +109,12 @@ Une liste export peut contient des :
       ... on NodeOeuvre {
         title
         nid
+        fieldVisuels {
+          entity {
+            name
+            vignette
+          }
+        }
         fieldAuteurNotice {
           format
           value
