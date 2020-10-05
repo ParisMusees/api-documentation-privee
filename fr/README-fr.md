@@ -84,7 +84,7 @@ Une liste export peut contient des :
 * fieldOeuvreGeolocalisation
 * fieldReferenceExport
 
-#### Exemple de requête avec des champs privés.
+Exemple de requête avec des champs privés :
 ```graphql
 # Les oeuvres du musée Cognacq Jay.
 {
@@ -159,6 +159,128 @@ Une liste export peut contient des :
 ### Media image
 * fieldMediaImage
 
+Exemple de requête avec des champs privés :
+```graphql
+# Liste des images libre de droit d'une oeuvre.
+{
+  nodeById(id: "128906") {
+    ... on NodeOeuvre {
+      title
+      queryFieldVisuels(filter: {conditions: [
+        {field: "field_image_libre", value: "1"}
+      ]}) {
+        entities {
+          ... on MediaImage {
+            name
+            vignette
+            publicUrl
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Media audio
+* fieldMediaFile
+* fieldPrivate
+
+Exemple de requête avec des champs privés :
+```graphql
+# Récupérer tous les audios privé.
+{
+  mediaQuery(filter: { conditions: [{operator: EQUAL, field: "field_private", value: "1"}]}) {
+    entities {
+      ... on MediaAudio {
+        entityId
+        name
+        fieldPrivate
+        fieldMediaFile {
+          entity {
+            fid
+            url
+            filename
+            filesize
+            filemime
+            fieldLegende
+          }
+        }
+        # plus des champs si besoin.
+      }
+    }
+  }
+}
+```
+
+```graphql
+# Récupérer tous les traductions pour le média audio avec id 1643285.
+{
+  mediaById (id: "1643285") {
+    entityTranslations {
+      ... on MediaAudio {
+        entityId
+        entityLanguage {
+            name
+        }
+        name
+        fieldMusee {
+          targetId
+          entity {
+            name
+          }
+        }
+        fieldMediaFile{
+          targetId
+          entity {
+            url
+            filename
+          }
+        }
+        fieldCopyright
+        fieldLegende
+        fieldPrivate
+        fieldMediaTags {
+          entity {
+            entityId
+            name
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```graphql
+#Récuperer les traductions qui nont pas de fichier audio.
+{
+  mediaQuery (
+    filter: {conditions:[
+      {field: "bundle", value: "audio"}
+      {field: "field_media_file", operator: IS_NULL}
+      {field: "langcode", operator: NOT_EQUAL, value: "fr"}
+    ]}
+   sort: [
+      {field: "created", direction: DESC}
+    ]
+  ) {
+    count
+    entities {
+      entityTranslations {
+        ... on MediaAudio {
+          entityId
+          entityLanguage {
+              name
+          }
+          name
+        }
+      }
+    }
+  }
+}
+```
+
 ### Ressource bibliographique
 * fieldRessNoteBibliographique
 
@@ -168,7 +290,7 @@ Une liste export peut contient des :
 * fieldDescriptionLongueExport
 * fieldReferenceExport
 
-## Récupération des parcours thématiques
+Récupération des parcours thématiques :
 
 ```graphql
 # Récupération de 20 derniers parcours thématiqus et ses informations.
